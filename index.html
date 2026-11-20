@@ -81,3 +81,22 @@ html{overflow-x:hidden}body{width:100%;overflow-x:hidden}.shell{width:100%;min-w
 @media(max-width:760px){.shell{width:100%;max-width:100%;padding-left:13px;padding-right:13px}.layout{width:100%;grid-template-columns:minmax(0,1fr)}.layout>.panel{width:100%;max-width:100%}.sectionHead{min-width:0}.gameTop{min-width:0;gap:8px}.hero{min-height:310px;padding:22px 18px}.heroText{max-width:100%;padding-bottom:125px}.hero h1{font-size:clamp(25px,6.4vw,34px);line-height:1.18}.hero p{font-size:14px;max-width:100%}.heroMascot{width:118px;height:132px;right:18px;bottom:8px;object-fit:cover}.grid{width:min(100%,345px);max-width:100%}}
 @media(max-width:420px){.shell{padding-left:12px;padding-right:12px}.hero{min-height:300px;padding:20px 16px}.heroText{padding-bottom:116px}.hero h1{font-size:clamp(23px,7vw,28px)}.hero p{font-size:13px;line-height:1.5}.heroMascot{width:102px;height:116px;right:14px;bottom:8px}.panel{padding:14px}.routepill{max-width:42%;font-size:11px}.modePick button{padding:8px 10px;font-size:12px}.stats{gap:5px}.statPill{padding:5px 7px;font-size:10px}.mascotTalk{gap:7px}.mascotAvatar{width:44px;height:44px;flex-basis:44px}.mascotBubble{font-size:12px;padding:7px 10px}}
 </style>
+
+<style>
+@media(max-width:760px){
+ .sectionHead{align-items:flex-start;flex-wrap:wrap}
+ .sectionHead>div{flex:1 1 190px;min-width:0}
+ .routepill{max-width:100%!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere;flex:0 1 auto;line-height:1.35}
+ .modePick{display:flex;flex-wrap:wrap;overflow:visible!important;gap:7px}
+ .modePick button{white-space:normal;line-height:1.2}
+ .powerGuide{min-width:0;overflow:hidden;overflow-wrap:anywhere}
+ .powerGuide ul{display:grid;grid-template-columns:minmax(0,1fr);gap:5px}
+ .powerGuide li{white-space:normal!important;overflow-wrap:anywhere}
+ .modeInfo{overflow-wrap:anywhere}
+ .spot{flex-wrap:wrap}
+ .spotBody{min-width:90px;flex:1 1 120px}
+ .spotState{white-space:normal;flex:0 1 auto}
+ .spotButton{flex:0 0 auto}
+}
+@media(max-width:420px){.routepill{font-size:11px}.powerGuide{font-size:12px}.spotBody{flex-basis:90px}}
+</style>
