@@ -103,3 +103,37 @@ html{overflow-x:hidden}body{width:100%;overflow-x:hidden}.shell{width:100%;min-w
 .grid{width:min(100%,385px);aspect-ratio:6/7;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(7,minmax(0,1fr))}
 @media(max-width:760px){.grid{width:min(100%,100%);aspect-ratio:6/7;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(7,minmax(0,1fr));gap:3px;padding:6px}.tile{border-radius:8px}}
 </style>
+
+<style>
+.fishcard{cursor:pointer;transition:transform .16s,box-shadow .16s}.fishcard:hover,.fishcard:focus-visible{transform:translateY(-2px);box-shadow:0 5px 14px #08435422;outline:2px solid #83cfc6;outline-offset:2px}
+#fishInfoModal{place-items:start center;overflow-y:auto;overscroll-behavior:contain;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));z-index:30}
+#fishInfoModal.show{display:grid}
+#fishInfoModal .dialog{width:min(520px,100%);max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;margin:auto;display:flex;flex-direction:column;text-align:left;padding:22px}
+#fishInfoModal .fish-info-head{text-align:center}
+#fishInfoModal .fish-info-icon{width:82px;height:82px;margin:0 auto 8px;padding:12px;border-radius:24px;background:#e9f8f5;display:grid;place-items:center}
+#fishInfoModal .fish-info-icon img,#fishInfoModal .fish-info-icon .seaIcon{width:100%;height:100%;object-fit:contain}
+#fishInfoModal h2{margin:5px 0 2px;text-align:center}
+#fishInfoModal .fish-info-caption{text-align:center;margin:0 0 12px;color:#64818a;font-size:13px}
+#fishInfoModal .fish-info-block{padding:12px 14px;margin:7px 0;border-radius:15px;background:#eef8f6;color:#315f6c;line-height:1.65}
+#fishInfoModal .fish-info-block strong{display:block;color:#073b55;margin-bottom:3px}
+#fishInfoModal .fish-info-close{position:sticky;bottom:0;flex:0 0 auto;margin-top:10px;background:#ff815e;color:#fff;box-shadow:0 -10px 14px #f9fffc;padding:14px}
+@media(max-width:480px){#fishInfoModal .dialog{padding:18px 16px;border-radius:21px}.fish-info-block{font-size:14px}}
+</style>
+<script>
+(()=>{
+const fishInfo=[
+{name:'クロマグロ',icon:'maguro',season:'初夏（5〜7月ごろ）',about:'氷見では「氷見マグロ」として知られる、大きく力強い回遊魚。水揚げの時期や量は年によって変わるよ。',eat:'脂と赤身の味を楽しむなら刺身やお寿司。表面をさっと焼く「たたき」も香ばしくておすすめ。',tip:'刺身で食べるときは、生食用として販売されているものを選ぼう。'},
+{name:'イワシん（イワシ）',icon:'iwashin',season:'春が氷見の盛り漁期',about:'氷見ではマイワシ、カタクチイワシ、ウルメイワシが水揚げされ、「氷見鰯」として親しまれているよ。小さな体にうまみがぎゅっと詰まっているんだ。',eat:'新鮮なものは刺身やお寿司、焼き魚、つみれ汁にも。みりん干しは甘じょっぱい味で、ごはんのおかずにもぴったり。',tip:'小骨が気になるときは、よく焼いたり、つみれにしたりすると食べやすいよ。'},
+{name:'ブリ',icon:'buri',season:'秋から冬（寒ブリは冬）',about:'氷見の冬を代表する魚。成長するにつれて呼び名が変わる「出世魚」で、冬は脂がのったブリが楽しめるよ。',eat:'お刺身やお寿司のほか、ぶりしゃぶ、照り焼き、ぶり大根も人気。あらも大根と煮るとうまみたっぷり。',tip:'脂ののり方は季節や個体で変わるので、お店のおすすめを聞いてみよう。'},
+{name:'アオリイカ',icon:'squid',season:'秋（9〜11月ごろ）',about:'氷見の秋を代表するイカ。身はもっちりとして、かむほどに甘みが広がるよ。',eat:'刺身やお寿司なら甘みと食感を楽しめるよ。天ぷら、煮付け、一夜干しもおいしい。',tip:'刺身用として販売されているものを選んで、鮮度表示や保存方法を確認しよう。'},
+{name:'甘エビ',icon:'amaebi',season:'秋から冬、春先にも',about:'富山湾の深い海にすむエビ。とろりとした食感と、やさしい甘みが魅力だよ。',eat:'刺身やお寿司で甘みを味わうのが定番。頭はみそ汁に入れると、だしが出ておいしいよ。',tip:'生で食べる場合は、生食用として販売されているものを選ぼう。'},
+{name:'岩牡蠣',icon:'oyster',season:'夏（お店や産地により時期は異なる）',about:'夏に旬を迎える大きな牡蠣。身がふっくらして、海のうまみを楽しめるよ。',eat:'焼き牡蠣や蒸し牡蠣、フライにすると、ふっくらした身と濃いうまみが楽しめる。',tip:'家庭では中心までしっかり加熱して食べよう。生食用として販売されたものは表示に従ってね。'}
+];
+const modal=document.createElement('div');modal.id='fishInfoModal';modal.className='modal';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','fishInfoTitle');modal.innerHTML='<div class="dialog" role="document"><div class="fish-info-head"><div class="fish-info-icon" id="fishInfoIcon"></div><h2 id="fishInfoTitle"></h2><p class="fish-info-caption">氷見のおさかな図鑑</p></div><div class="fish-info-block"><strong>旬の目安</strong><span id="fishInfoSeason"></span></div><div class="fish-info-block"><strong>どんな魚？</strong><span id="fishInfoAbout"></span></div><div class="fish-info-block"><strong>おいしい食べ方</strong><span id="fishInfoEat"></span></div><div class="fish-info-block"><strong>食べるときのポイント</strong><span id="fishInfoTip"></span></div><button type="button" class="btn fish-info-close" id="fishInfoClose">閉じる</button></div>';
+document.body.appendChild(modal);
+const keys=['maguro','iwashin','buri','squid','amaebi','oyster'];
+function showFish(i){const f=fishInfo[i];if(!f)return;document.getElementById('fishInfoTitle').textContent=f.name;document.getElementById('fishInfoSeason').textContent=f.season;document.getElementById('fishInfoAbout').textContent=f.about;document.getElementById('fishInfoEat').textContent=f.eat;document.getElementById('fishInfoTip').textContent=f.tip;document.getElementById('fishInfoIcon').innerHTML=f.icon==='iwashin'?'<img class="iwashinSprite" src="iwashin-character.jpg" alt="イワシん">':'<span class="seaIcon icon-'+f.icon+'" role="img" aria-label="'+f.name+'"></span>';modal.classList.add('show');document.getElementById('fishInfoClose').focus()}
+document.addEventListener('click',e=>{const card=e.target.closest('.fishcard');if(card){const index=[...card.parentElement.children].indexOf(card);if(card.classList.contains('got'))showFish(index);else{const msg=document.getElementById('toast');if(msg){msg.textContent='スポットをクリアして魚カードを集めよう！';msg.classList.add('show');setTimeout(()=>msg.classList.remove('show'),2100)}}}if(e.target===modal||e.target.closest('#fishInfoClose'))modal.classList.remove('show')});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remove('show');if((e.key==='Enter'||e.key===' ')&&document.activeElement?.classList.contains('fishcard')){e.preventDefault();const card=document.activeElement;const index=[...card.parentElement.children].indexOf(card);if(card.classList.contains('got'))showFish(index)}});
+})();
+</script>
