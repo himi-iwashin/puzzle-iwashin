@@ -19,7 +19,7 @@ button{font:inherit;cursor:pointer;border:0}button:focus-visible{outline:3px sol
 </style>
 </head><body>
 <main class="shell">
- <header class="top"><div class="brand"><span class="brandmark"><span class="iwashinSprite" role="img" aria-label="イワシん"></span></span><span>イワシん！氷見おさかなパズル</span></div><div class="topright"><span class="badge" id="stampBadge">🐚 0 / 3 スポット</span><button class="sound" id="resetBtn" aria-label="ゲームをリセット" title="最初から">↻</button></div></header>
+ <header class="top"><div class="brand"><span class="brandmark"><img class="brandmarkMascot" src="iwashin-happy.webp" alt="イワシん"></span><span>イワシん！氷見おさかなパズル</span></div><div class="topright"><span class="badge" id="stampBadge">🐚 0 / 3 スポット</span><button class="sound" id="resetBtn" aria-label="ゲームをリセット" title="最初から">↻</button></div></header>
  <section class="hero"><div class="heroText"><div class="eyebrow">HIMI SEA ADVENTURE</div><h1>氷見をめぐって<br>おさかなを集めよう！</h1><p>スポットを訪れてパズルに挑戦。魚カードを集めて、イワシんと氷見の海を冒険しよう！</p></div><img class="heroMascot" src="iwashin-character.jpg" alt="イワシん"></section>
  <div class="layout">
   <section class="panel gamePanel"><div class="sectionHead"><div><h2 id="gameTitle">海のパズルに挑戦！</h2><div class="sub" id="gameSub">スポットを選んでチェックインしよう</div></div><span class="routepill" id="routeLabel">氷見おさかなコース</span></div>
@@ -150,3 +150,5 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remo
 @keyframes wave-surge{0%{opacity:0;transform:translateY(35%)}35%{opacity:1}100%{opacity:0;transform:translateY(0)}}
 .tile.power-wave:after{content:'🌊';background:#087e91;color:#fff;width:24px;height:24px;line-height:24px;font-size:13px;border-radius:10px}
 </style>
+
+<style>.brandmark{background:linear-gradient(145deg,#e8fbf8,#d3f3ef);padding:2px}.brandmarkMascot{display:block;width:100%;height:100%;object-fit:contain;border-radius:50%;background:transparent}</style>
