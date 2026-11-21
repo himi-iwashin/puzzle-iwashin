@@ -252,3 +252,17 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remo
 @keyframes sidePop{to{transform:translateY(-10px) scale(1.15) rotate(8deg)}}
 @media(max-width:600px){#modal .dialog.celebrating-tier{width:calc(100vw - 20px);max-height:calc(100dvh - 20px);padding:20px 16px}#modal .dialog.celebrating-tier #modalTitle{font-size:clamp(25px,7vw,34px)}#modal .dialog .clearCelebration .partyMessage{top:3%;font-size:clamp(22px,7vw,32px)}#modal .dialog .clearCelebration .cracker{top:44%;font-size:34px}}
 </style>
+
+<style>
+/* Prevent sprite-sheet repaint ghosts on mobile GPUs during match and drop animations. */
+.tile{overflow:hidden;-webkit-tap-highlight-color:transparent;-webkit-backface-visibility:hidden;backface-visibility:hidden;transform:translateZ(0);-webkit-transform:translateZ(0)}
+.tile:active,.tile.selected{transform:translateZ(0) scale(.98);-webkit-transform:translateZ(0) scale(.98)}
+.tile.selected{transform:translateZ(0) scale(1.02);-webkit-transform:translateZ(0) scale(1.02)}
+.tile .seaIcon{position:relative;isolation:isolate;background-repeat:no-repeat!important;background-size:300% 200%!important;-webkit-background-size:300% 200%!important;-webkit-backface-visibility:hidden;backface-visibility:hidden;transform:translateZ(0);-webkit-transform:translateZ(0)}
+.tile .seaIcon.icon-maguro{background-position:0 0!important}.tile .seaIcon.icon-buri{background-position:50% 0!important}.tile .seaIcon.icon-squid{background-position:100% 0!important}.tile .seaIcon.icon-amaebi{background-position:0 100%!important}.tile .seaIcon.icon-oyster{background-position:50% 100%!important}
+.tile.match-pop{animation:match-pop-stable .42s ease-in-out both;filter:none!important}
+@keyframes match-pop-stable{0%,100%{transform:translateZ(0) scale(1);box-shadow:inset 0 -3px #c7e8df}45%{transform:translateZ(0) scale(1.08);box-shadow:0 0 0 4px #fff2a8,0 0 18px #ffb82e}}
+.tile.falling{animation:tile-drop-stable .34s cubic-bezier(.2,.75,.3,1) both;will-change:transform,opacity}
+@keyframes tile-drop-stable{0%{transform:translate3d(0,-20px,0);opacity:.65}75%{transform:translate3d(0,2px,0);opacity:1}100%{transform:translate3d(0,0,0);opacity:1}}
+@media(hover:none){.tile:active{filter:none!important}}
+</style>
