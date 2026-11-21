@@ -238,3 +238,17 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remo
 <script>
 (()=>{const modal=document.getElementById('modal'),dialog=modal?.querySelector('.dialog');if(!modal||!dialog)return;const sync=()=>{const title=document.getElementById('modalTitle')?.textContent||'',clear=/ステージクリア|おさかなカードをゲット/.test(title);dialog.classList.toggle('iwashin-victory',modal.classList.contains('show')&&clear)};new MutationObserver(sync).observe(modal,{attributes:true,attributeFilter:['class']});sync()})();
 </script>
+
+<style>
+#modal .dialog{position:relative;isolation:isolate;overflow:hidden}
+#modal .dialog.celebrating-tier{width:min(900px,calc(100vw - 32px));max-width:900px;max-height:calc(100dvh - 24px);padding:clamp(22px,4vw,42px);overflow:auto}
+#modal .dialog.celebrating-tier #modalTitle{font-size:clamp(28px,4vw,46px);line-height:1.2;white-space:normal;overflow-wrap:anywhere}
+#modal .dialog .clearCelebration{position:absolute!important;inset:0!important;width:100%;height:100%;overflow:hidden;border-radius:inherit;pointer-events:none;z-index:1}
+#modal .dialog .clearCelebration .partyMessage{left:50%;width:calc(100% - 28px);white-space:normal;text-align:center;line-height:1.15;overflow-wrap:anywhere}
+#modal .dialog .clearCelebration .cracker{top:48%;bottom:auto;font-size:clamp(34px,6vw,58px);animation:sidePop 1s ease-in-out infinite alternate}
+#modal .dialog .clearCelebration .cracker.left{left:3%}#modal .dialog .clearCelebration .cracker.right{right:3%;animation-delay:.25s}
+#modal .dialog .clearCelebration .petal{top:-12px!important;animation:petalsInside var(--pdur) linear var(--pdelay) both}
+@keyframes petalsInside{0%{opacity:0;transform:translateY(-12px) rotate(0)}10%,85%{opacity:.95}100%{opacity:0;transform:translate(var(--sway),100vh) rotate(var(--prot))}}
+@keyframes sidePop{to{transform:translateY(-10px) scale(1.15) rotate(8deg)}}
+@media(max-width:600px){#modal .dialog.celebrating-tier{width:calc(100vw - 20px);max-height:calc(100dvh - 20px);padding:20px 16px}#modal .dialog.celebrating-tier #modalTitle{font-size:clamp(25px,7vw,34px)}#modal .dialog .clearCelebration .partyMessage{top:3%;font-size:clamp(22px,7vw,32px)}#modal .dialog .clearCelebration .cracker{top:44%;font-size:34px}}
+</style>
