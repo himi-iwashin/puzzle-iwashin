@@ -308,3 +308,43 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remo
 (()=>{const KEY='iwashinSupergod3Special',modal=document.getElementById('modal');if(!modal)return;const overlay=document.createElement('div');overlay.id='s3RewardOverlay';overlay.innerHTML='<section id="s3RewardCard" role="dialog" aria-modal="true" aria-labelledby="s3RewardTitle"><button id="s3RewardClose" aria-label="閉じる">×</button><h2 id="s3RewardTitle">スーパーゴッドイワシん3 特別報酬</h2><p>最終試練をこえた勇者だけの、ひみつの宝箱！</p><nav id="s3RewardTabs" aria-label="特別コレクション"><button data-tab="book" aria-selected="true">特別図鑑</button><button data-tab="stamp" aria-selected="false">限定スタンプ</button><button data-tab="comic" aria-selected="false">イワシん漫画</button></nav><article data-page="book" class="selected"><div class="s3Hero"><img src="iwashin-happy.webp" alt="銀河のイワシん"><div><b>銀河のイワシん図鑑</b><br>男の子。氷見の海で生まれた、みりん干しのイワシん。夢は「魚ぎらいな子どもをゼロにする」こと。身長は、みりん干し3枚分！仲間の笑顔を力に、最後の海まで泳ぎきる。</div></div><p><b>ひみつの力：</b>みんなの「おいしい！」を集めると、どんな荒波もこえていける。スーパーゴッドイワシん3をクリアした人だけが出会える、伝説の姿だよ。</p></article><article data-page="stamp"><div class="s3Stamp"><span>★ 最終試練クリア ★</span><img src="iwashin-happy.webp" alt="限定イワシんスタンプ"><b>銀河の大漁王</b></div><p style="text-align:center">スーパーゴッドイワシん3を制覇した証。ここでしか見られない特別スタンプ！</p></article><article data-page="comic"><div class="s3Comic"><div><big>🌊 1</big><br><b>さいごの海へ！</b><br>イワシん「25,000点の壁、こえてみせる！」</div><div><big>✨ 2</big><br><b>なかまの声</b><br>魚たち「イワシん、がんばれー！」<br>イワシん「みんなの声が力になる！」</div><div><big>🎆 3</big><br><b>伝説の大漁！</b><br>イワシん「やったー！次は君の番だよ！」</div></div></article></section>';document.body.appendChild(overlay);const open=()=>{overlay.classList.add('open');overlay.querySelector('#s3RewardClose').focus()},close=()=>overlay.classList.remove('open');overlay.querySelector('#s3RewardClose').addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});overlay.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{overlay.querySelectorAll('[data-tab]').forEach(x=>x.setAttribute('aria-selected',String(x===b)));overlay.querySelectorAll('[data-page]').forEach(p=>p.classList.toggle('selected',p.dataset.page===b.dataset.tab))}));document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});function addLaunch(){let b=document.getElementById('s3RewardLaunch');if(!b){b=document.createElement('button');b.id='s3RewardLaunch';b.className='badge';b.textContent='🌟 最終クリア特典';b.addEventListener('click',open);document.querySelector('.topright')?.appendChild(b)}const dialog=modal.querySelector('.dialog'),next=document.getElementById('closeModal');if(dialog&&next&&!dialog.querySelector('.s3RewardInModal')){const gift=document.createElement('button');gift.className='btn secondary s3RewardInModal';gift.textContent='🌟 特別図鑑・スタンプ・漫画を見る';gift.addEventListener('click',open);dialog.insertBefore(gift,next)}}if(localStorage.getItem(KEY)==='yes')addLaunch();function check(){if(!modal.classList.contains('show'))return;const title=document.getElementById('modalTitle')?.textContent||'',summary=document.getElementById('modalText')?.innerText||'';if(!/ステージクリア|おさかなカードをゲット/.test(title)||!summary.startsWith('スーパーゴッドイワシん3：')||!summary.includes('25,000点'))return;localStorage.setItem(KEY,'yes');addLaunch()}new MutationObserver(check).observe(modal,{attributes:true,childList:true,characterData:true,subtree:true})})();
 </script>
 
+
+
+<script>
+(()=>{
+  const modePick=document.getElementById('modePick');
+  const modeInfo=document.getElementById('modeInfo');
+  const modal=document.getElementById('modal');
+  if(!modePick||!modeInfo||!modal)return;
+  const countKey=id=>'iwashinClears_'+id;
+  const countMarker='　｜　過去のクリア回数：';
+  const selectedMode=()=>modePick.querySelector('button.active')?.dataset.mode||'';
+  function updateCount(){
+    const id=selectedMode();
+    if(!id)return;
+    const description=modeInfo.textContent.split(countMarker)[0];
+    const count=Number(localStorage.getItem(countKey(id)))||0;
+    const updated=description+countMarker+count+'回';
+    if(modeInfo.textContent!==updated)modeInfo.textContent=updated;
+  }
+  const infoObserver=new MutationObserver(updateCount);
+  infoObserver.observe(modeInfo,{childList:true,characterData:true,subtree:true});
+  modePick.addEventListener('click',()=>setTimeout(updateCount,0));
+  const modalObserver=new MutationObserver(()=>{
+    if(!modal.classList.contains('show')){modal.removeAttribute('data-clear-counted');return}
+    if(modal.dataset.clearCounted==='true')return;
+    const title=document.getElementById('modalTitle')?.textContent||'';
+    if(!/^(ステージクリア！|おさかなカードをゲット！)$/.test(title))return;
+    const id=selectedMode();
+    if(!id||id==='score')return;
+    const count=(Number(localStorage.getItem(countKey(id)))||0)+1;
+    localStorage.setItem(countKey(id),String(count));
+    modal.dataset.clearCounted='true';
+    updateCount();
+    const summary=document.getElementById('modalText');
+    if(summary&&!summary.innerHTML.includes('通算クリア回数'))summary.innerHTML+='<br><br>通算クリア回数：<b>'+count+'回</b>';
+  });
+  modalObserver.observe(modal,{attributes:true,childList:true,characterData:true,subtree:true});
+  updateCount();
+})();
+</script>
