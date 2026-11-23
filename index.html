@@ -267,3 +267,14 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remo
 @keyframes tile-drop-stable{0%{transform:translate3d(0,-20px,0);opacity:.65}75%{transform:translate3d(0,2px,0);opacity:1}100%{transform:translate3d(0,0,0);opacity:1}}
 @media(hover:none){.tile:active{filter:none!important}}
 </style>
+
+<style>
+/* Keep fish tiles crisp on mobile: avoid clipped mascot artwork and stale GPU layers while pieces fall. */
+.tile .iwashinSprite{object-fit:contain!important;border-radius:0!important;background:transparent!important;transform:none!important;-webkit-transform:none!important;-webkit-backface-visibility:visible!important;backface-visibility:visible!important}
+.tile{backface-visibility:visible!important;-webkit-backface-visibility:visible!important;transform:none!important;-webkit-transform:none!important;will-change:auto!important}
+.tile:active,.tile.selected{transform:scale(.98)!important;-webkit-transform:scale(.98)!important}
+.tile.selected{transform:scale(1.02)!important;-webkit-transform:scale(1.02)!important}
+.tile .seaIcon{transform:none!important;-webkit-transform:none!important;backface-visibility:visible!important;-webkit-backface-visibility:visible!important}
+.tile.falling{animation:tile-drop-mobile-safe .34s cubic-bezier(.2,.75,.3,1) both!important;will-change:auto!important}
+@keyframes tile-drop-mobile-safe{0%{transform:translateY(-20px);opacity:.65}75%{transform:translateY(2px);opacity:1}100%{transform:translateY(0);opacity:1}}
+</style>
