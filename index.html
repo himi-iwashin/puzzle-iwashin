@@ -291,3 +291,13 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remo
 
 <style></style><style>.tile .iwashinSprite{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center 32%!important;border-radius:50%!important;background:#fff!important}</style>
 <style>.tile .iwashinSprite{width:118%!important;height:118%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center 32%!important;border-radius:50%!important;background:#fff!important}</style>
+<style>
+/* Final override: keep all fish art inside the tile and remove the bottom color band. */
+.tile{overflow:hidden!important;background-clip:padding-box!important;box-shadow:inset 0 0 0 1px rgba(5,43,66,.08)!important}
+.tile .iwashinSprite{width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;object-position:center 32%!important;border-radius:0!important;background:transparent!important}
+/* Fit the hidden challenger portrait and its name label above the heading. */
+#modal .dialog.iwashin-victory #modalFish:has(.challenge-boss){width:100%!important;height:224px!important;flex:0 0 224px!important;margin:0 auto 8px!important;display:grid!important;place-items:center!important;overflow:visible!important}
+#modal .dialog.iwashin-victory #modalFish .challenge-boss{width:184px;height:184px;margin:0 auto 10px}
+#modal .dialog.iwashin-victory #modalFish .challenge-boss img{width:138px;height:138px}
+#modal .dialog.iwashin-victory #modalTitle{position:relative;z-index:3;line-height:1.2;overflow-wrap:anywhere;margin:8px 0 14px}
+</style>
