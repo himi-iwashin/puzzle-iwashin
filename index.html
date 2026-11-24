@@ -348,3 +348,13 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remo
   updateCount();
 })();
 </script>
+
+<style>
+/* Keep the main navigation link in the header flow on desktop and mobile. */
+.iwashin-main-link{position:static!important;inset:auto!important;z-index:auto!important;flex:0 0 auto;min-height:40px;padding:0 12px;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.topright{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+@media(max-width:760px){.top{display:flex;flex-wrap:wrap;row-gap:8px}.brand{min-width:0;flex:1 1 100%}.topright{width:100%;justify-content:flex-end;gap:7px}.iwashin-main-link{min-height:38px}}
+</style>
+<script>
+(()=>{const link=document.querySelector('.iwashin-main-link');const actions=document.querySelector('.topright');if(link&&actions&&!actions.contains(link))actions.prepend(link)})();
+</script>
