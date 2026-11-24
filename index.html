@@ -463,3 +463,40 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remo
 <script>
 (()=>{const timer=document.getElementById('turnTimer'),series=document.getElementById('battleSeries'),row=document.getElementById('rematchRow');if(!timer||!series)return;const key=()=>{let id='';try{id=new URLSearchParams(location.search).get('battle')||'';if(!id){const u=document.getElementById('inviteLink')?.value||'';id=u?new URL(u,location.href).searchParams.get('battle')||'':''}}catch{}return 'iwashinBattleSeries_'+encodeURIComponent(id||'shared-room')};const update=()=>{series.hidden=timer.hidden&&!localStorage.getItem(key())};update();new MutationObserver(update).observe(timer,{attributes:true,attributeFilter:['hidden']});if(row)new MutationObserver(update).observe(row,{attributes:true,attributeFilter:['hidden']})})();
 </script>
+
+<style>
+#personalRecordSettings{margin:20px 0 0;padding:18px 20px}
+#personalRecordSettings h2{margin:0 0 5px;color:#073b55;font-size:18px}
+#personalRecordSettings p{margin:0 0 12px;color:#5f7d87;font-size:13px;line-height:1.6}
+.recordControls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center}
+.recordControls select{min-width:0;width:100%;height:44px;padding:0 12px;border:1px solid #c5dfdb;border-radius:12px;background:#fff;color:#244c5a;font:inherit;font-weight:800}
+.recordControls button{min-height:44px;padding:10px 14px;border-radius:12px;background:#ffe5dc;color:#9a422d;font-weight:900}
+#recordSummary{margin-top:11px;padding:12px 14px;border-radius:14px;background:#f1faf7;color:#315f6c;font-size:13px;line-height:1.75;font-weight:750}
+@media(max-width:520px){#personalRecordSettings{padding:15px}.recordControls{grid-template-columns:1fr}.recordControls button{width:100%}}
+</style>
+<script>
+(()=>{
+ const root=document.querySelector('.shell');if(!root||document.getElementById('personalRecordSettings'))return;
+ const box=document.createElement('section');box.className='panel';box.id='personalRecordSettings';box.innerHTML='<h2>モード別の記録設定</h2><p>自己ベスト・最大連鎖・最大消し・クリア回数をモードごとに確認できます。記録はこの端末に保存されます。</p><div class="recordControls"><select id="recordModeSelect" aria-label="記録を表示するモード"></select><button type="button" id="resetModeRecords">このモードの記録をリセット</button></div><div id="recordSummary" aria-live="polite"></div>';
+ root.appendChild(box);
+ const select=box.querySelector('#recordModeSelect'),summary=box.querySelector('#recordSummary'),reset=box.querySelector('#resetModeRecords');
+ const statsKey=id=>'iwashinRecords_'+id;
+ const selectedId=()=>select.value||'';
+ const read=id=>{try{return JSON.parse(localStorage.getItem(statsKey(id))||'{}')}catch{return {}}};
+ const available=()=>[...document.querySelectorAll('#modePick button[data-mode]')].map(b=>({id:b.dataset.mode,name:b.textContent.trim()}));
+ function fillModes(){const old=selectedId(),modes=available();select.innerHTML=modes.map(m=>'<option value="'+m.id+'">'+m.name+'</option>').join('');if(modes.some(m=>m.id===old))select.value=old;else{const active=document.querySelector('#modePick button.active')?.dataset.mode;if(modes.some(m=>m.id===active))select.value=active;else if(modes[0])select.value=modes[0].id}refresh()}
+ function refresh(){const id=selectedId();if(!id){summary.textContent='選べるモードがありません。';return}const s=read(id),best=Number(localStorage.getItem('iwashinBest_'+id))||Number(s.bestScore)||0,clears=Number(localStorage.getItem('iwashinClears_'+id))||0;summary.innerHTML='自己ベスト：<b>'+best.toLocaleString()+'点</b><br>最大連鎖：<b>'+(Number(s.maxCombo)||0)+'コンボ</b>　最大消し：<b>'+(Number(s.maxClear)||0)+'個</b>　6個以上：<b>'+(Number(s.bigClears)||0)+'回</b><br>クリア回数：<b>'+clears+'回</b>'}
+ fillModes();select.addEventListener('change',refresh);new MutationObserver(fillModes).observe(document.getElementById('modePick'),{childList:true,subtree:true});
+ reset.addEventListener('click',()=>{const id=selectedId(),name=available().find(m=>m.id===id)?.name||'選択したモード';if(!id)return;if(!confirm(name+'の自己ベスト・最大連鎖・最大消し・クリア回数をリセットしますか？'))return;localStorage.removeItem('iwashinBest_'+id);localStorage.removeItem('iwashinClears_'+id);localStorage.removeItem(statsKey(id));if(document.querySelector('#modePick button.active')?.dataset.mode===id){const best=document.getElementById('bestScore');if(best)best.textContent='0'}refresh();const toast=document.getElementById('toast');if(toast){toast.textContent=name+'の記録をリセットしました';toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2100)}});
+ const modal=document.getElementById('modal');if(!modal)return;
+ function saveRun(){if(!modal.classList.contains('show')){delete modal.dataset.personalRecordSaved;return}if(modal.dataset.personalRecordSaved==='yes')return;const id=document.querySelector('#modePick button.active')?.dataset.mode;if(!id)return;const text=document.getElementById('modalText')?.textContent||'',combo=Number(text.match(/最大連鎖：s*(d+)コンボ/)?.[1])||0,maxClear=Number(text.match(/最大消し：s*(d+)個/)?.[1])||0,bigClears=Number(text.match(/6個以上：s*(d+)回/)?.[1])||0,score=Number((document.getElementById('score')?.textContent||'0').replace(/,/g,''))||0,s=read(id);s.bestScore=Math.max(Number(s.bestScore)||0,score);s.maxCombo=Math.max(Number(s.maxCombo)||0,combo);s.maxClear=Math.max(Number(s.maxClear)||0,maxClear);s.bigClears=Math.max(Number(s.bigClears)||0,bigClears);try{localStorage.setItem(statsKey(id),JSON.stringify(s))}catch{}modal.dataset.personalRecordSaved='yes';refresh()}
+ new MutationObserver(saveRun).observe(modal,{attributes:true,childList:true,characterData:true,subtree:true});
+})();
+</script>
+<script>
+(()=>{const timer=document.getElementById('turnTimer'),series=document.getElementById('battleSeries'),row=document.getElementById('rematchRow');if(!timer||!series)return;const update=()=>{series.hidden=timer.hidden&&(!row||row.hidden)};update();const observer=new MutationObserver(update);observer.observe(timer,{attributes:true,attributeFilter:['hidden']});if(row)observer.observe(row,{attributes:true,attributeFilter:['hidden']})})();
+</script>
+
+<script>
+(()=>{const modal=document.getElementById('modal');if(!modal)return;const key=id=>'iwashinRecords_'+id,read=id=>{try{return JSON.parse(localStorage.getItem(key(id))||'{}')}catch{return {}}};function save(){if(!modal.classList.contains('show')){delete modal.dataset.personalRecordV2;return}if(modal.dataset.personalRecordV2==='yes')return;const id=document.querySelector('#modePick button.active')?.dataset.mode;if(!id)return;const text=document.getElementById('modalText')?.textContent||'',combo=Number(text.match(/最大連鎖： *([0-9]+)コンボ/)?.[1])||0,maxClear=Number(text.match(/最大消し： *([0-9]+)個/)?.[1])||0,big=Number(text.match(/6個以上： *([0-9]+)回/)?.[1])||0,s=read(id);s.maxCombo=Math.max(Number(s.maxCombo)||0,combo);s.maxClear=Math.max(Number(s.maxClear)||0,maxClear);s.bigClears=Math.max(Number(s.bigClears)||0,big);try{localStorage.setItem(key(id),JSON.stringify(s))}catch{}modal.dataset.personalRecordV2='yes';document.querySelector('#recordModeSelect')?.dispatchEvent(new Event('change'))}new MutationObserver(save).observe(modal,{attributes:true,childList:true,characterData:true,subtree:true})})();
+</script>
