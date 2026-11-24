@@ -459,3 +459,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remo
  render();
 })();
 </script>
+
+<script>
+(()=>{const timer=document.getElementById('turnTimer'),series=document.getElementById('battleSeries'),row=document.getElementById('rematchRow');if(!timer||!series)return;const key=()=>{let id='';try{id=new URLSearchParams(location.search).get('battle')||'';if(!id){const u=document.getElementById('inviteLink')?.value||'';id=u?new URL(u,location.href).searchParams.get('battle')||'':''}}catch{}return 'iwashinBattleSeries_'+encodeURIComponent(id||'shared-room')};const update=()=>{series.hidden=timer.hidden&&!localStorage.getItem(key())};update();new MutationObserver(update).observe(timer,{attributes:true,attributeFilter:['hidden']});if(row)new MutationObserver(update).observe(row,{attributes:true,attributeFilter:['hidden']})})();
+</script>
