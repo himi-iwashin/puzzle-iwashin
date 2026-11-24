@@ -500,3 +500,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remo
 <script>
 (()=>{const modal=document.getElementById('modal');if(!modal)return;const key=id=>'iwashinRecords_'+id,read=id=>{try{return JSON.parse(localStorage.getItem(key(id))||'{}')}catch{return {}}};function save(){if(!modal.classList.contains('show')){delete modal.dataset.personalRecordV2;return}if(modal.dataset.personalRecordV2==='yes')return;const id=document.querySelector('#modePick button.active')?.dataset.mode;if(!id)return;const text=document.getElementById('modalText')?.textContent||'',combo=Number(text.match(/最大連鎖： *([0-9]+)コンボ/)?.[1])||0,maxClear=Number(text.match(/最大消し： *([0-9]+)個/)?.[1])||0,big=Number(text.match(/6個以上： *([0-9]+)回/)?.[1])||0,s=read(id);s.maxCombo=Math.max(Number(s.maxCombo)||0,combo);s.maxClear=Math.max(Number(s.maxClear)||0,maxClear);s.bigClears=Math.max(Number(s.bigClears)||0,big);try{localStorage.setItem(key(id),JSON.stringify(s))}catch{}modal.dataset.personalRecordV2='yes';document.querySelector('#recordModeSelect')?.dispatchEvent(new Event('change'))}new MutationObserver(save).observe(modal,{attributes:true,childList:true,characterData:true,subtree:true})})();
 </script>
+
+<script>
+(()=>{const start=document.getElementById('startBtn');if(!start)return;start.addEventListener('click',()=>{const online=Number(window.__iwashinOnlineMoves)>0&&typeof window.__iwashinBattleRandom==='function';if(!online)window.__iwashinOnlineTurnAllowed=undefined},{capture:true})})();
+</script>
