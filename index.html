@@ -406,3 +406,56 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remo
 
 <style>.top{flex-wrap:wrap}.topright{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.iwashin-main-link{position:static!important;inset:auto!important;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;z-index:auto!important;flex:0 0 auto;min-height:40px;padding:0 12px;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}</style>
 <script>(()=>{const move=()=>{const a=document.querySelector('.iwashin-main-link'),h=document.querySelector('.topright');if(a&&h){h.prepend(a);a.style.setProperty('position','static','important');a.style.setProperty('inset','auto','important');return true}return false};if(!move()){const o=new MutationObserver(()=>{if(move())o.disconnect()});o.observe(document.documentElement,{childList:true,subtree:true})}})();</script>
+
+
+<style>
+/* Online play: avoid mobile GPU sprite-sheet ghosts during clear and fall. */
+.online-match-active .tile,
+.online-match-active .tile:active,
+.online-match-active .tile.selected,
+.online-match-active .tile.match-pop,
+.online-match-active .tile.falling{transform:none!important;filter:none!important;transition:none!important;will-change:auto!important;backface-visibility:visible!important;-webkit-backface-visibility:visible!important}
+.online-match-active .tile.match-pop{z-index:2;animation:iw-online-clear-pulse .42s ease-in-out both!important;outline:0 solid transparent}
+.online-match-active .tile.falling{animation:none!important}
+.online-match-active .tile .seaIcon,
+.online-match-active .tile .iwashinSprite{transform:none!important;filter:none!important;will-change:auto!important;backface-visibility:visible!important;-webkit-backface-visibility:visible!important}
+@keyframes iw-online-clear-pulse{0%,100%{outline:0 solid transparent;box-shadow:inset 0 -2px 4px rgba(5,43,66,.12)}45%{outline:3px solid #ffe27a;box-shadow:0 0 12px #ffcf67aa,inset 0 -2px 4px rgba(5,43,66,.12)}}
+/* Keep the live match panel beside the board, above Iwashin's comment. */
+.battleScoreboard{width:min(100%,350px);margin:7px auto 0;gap:6px;padding:9px 7px}
+.battleScoreboard>span:not(.versus){flex:1;text-align:center;font-size:12px}
+.battleScoreboard b{display:block;margin:1px 0;font-size:clamp(18px,5vw,24px)}
+.battleSeries{width:min(100%,350px);margin:5px auto 8px;padding:7px 9px;border:1px solid #cfe7e3;border-radius:12px;background:#fff;text-align:center;color:#315f6c;font-size:11px;font-weight:850;line-height:1.5}
+.battleSeries strong{color:#073b55}
+@media(max-width:760px){.turnTimer{width:min(100%,350px);margin:6px auto 0}.battleScoreboard{font-size:11px}.battleScoreboard small{font-size:9px}}
+</style>
+<script>
+(()=>{
+ const byId=id=>document.getElementById(id), timer=byId('turnTimer'), score=byId('battleScoreboard'), mascot=document.querySelector('.mascotTalk'), rematch=byId('rematchBattle'), rematchRow=byId('rematchRow');
+ if(!timer||!score||!mascot)return;
+ /* Reposition the existing live nodes; the battle code keeps its references. */
+ mascot.before(timer);mascot.before(score);
+ const series=document.createElement('div');series.className='battleSeries';series.id='battleSeries';series.setAttribute('aria-live','polite');score.after(series);
+ const roomId=()=>{let id='';try{id=new URLSearchParams(location.search).get('battle')||'';if(!id){const u=byId('inviteLink')?.value||'';id=u?new URL(u,location.href).searchParams.get('battle')||'':''}if(!id){const v=byId('battleInvite')?.value||'';id=v.includes('://')?new URL(v).searchParams.get('battle')||'':v.trim()}}catch{}return id||'shared-room'};
+ const key=()=> 'iwashinBattleSeries_'+encodeURIComponent(roomId());
+ const read=()=>{try{return JSON.parse(localStorage.getItem(key())||'{}')}catch{return {}}};
+ const write=s=>{try{localStorage.setItem(key(),JSON.stringify(s))}catch{}};
+ const render=()=>{const s=read(),played=Math.min(10,Number(s.played)||0),w=Number(s.wins)||0,l=Number(s.losses)||0,d=Number(s.draws)||0;series.innerHTML='<strong>この相手との対戦成績</strong>　'+w+'勝 '+l+'敗 '+d+'分<br>10戦勝負：'+played+' / 10戦'+(played===10?'　🎉 10戦終了！ '+(Number(s.seriesWins)||0)+'勝 '+(Number(s.seriesLosses)||0)+'敗 '+(Number(s.seriesDraws)||0)+'分':'');if(rematch&&played===10)rematch.textContent='次の10戦をはじめる'};
+ let roundInProgress=false,recorded=false;
+ const observer=new MutationObserver(()=>{
+   const playing=!timer.hidden;
+   document.body.classList.toggle('online-match-active',playing);
+   if(playing&&!roundInProgress){roundInProgress=true;recorded=false;render()}
+   if(!playing&&roundInProgress&&rematchRow&&!rematchRow.hidden&&!recorded){
+     const mine=Number((byId('myBattleScore')?.textContent||'0').replace(/,/g,''))||0,theirs=Number((byId('theirBattleScore')?.textContent||'0').replace(/,/g,''))||0;
+     let s=read();if(!Number.isFinite(Number(s.played))||Number(s.played)>=10)s={played:0,wins:0,losses:0,draws:0,seriesWins:Number(s.seriesWins)||0,seriesLosses:Number(s.seriesLosses)||0,seriesDraws:Number(s.seriesDraws)||0};
+     s.played=(Number(s.played)||0)+1;
+     if(mine>theirs)s.wins=(Number(s.wins)||0)+1;else if(mine<theirs)s.losses=(Number(s.losses)||0)+1;else s.draws=(Number(s.draws)||0)+1;
+     if(s.played===10){if(s.wins>s.losses)s.seriesWins=(Number(s.seriesWins)||0)+1;else if(s.wins<s.losses)s.seriesLosses=(Number(s.seriesLosses)||0)+1;else s.seriesDraws=(Number(s.seriesDraws)||0)+1}
+     write(s);recorded=true;roundInProgress=false;render();
+   }
+ });
+ observer.observe(timer,{attributes:true,attributeFilter:['hidden']});observer.observe(rematchRow,{attributes:true,attributeFilter:['hidden']});
+ rematch?.addEventListener('click',()=>{const s=read();if(Number(s.played)>=10){write({played:0,wins:0,losses:0,draws:0,seriesWins:Number(s.seriesWins)||0,seriesLosses:Number(s.seriesLosses)||0,seriesDraws:Number(s.seriesDraws)||0});rematch.textContent='同じ相手ともう一度対戦';render()}},{capture:true});
+ render();
+})();
+</script>
